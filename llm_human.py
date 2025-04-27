@@ -403,7 +403,7 @@ def evaluate_model(model, test_data=None, num_samples=10):
     metrics = calculate_simple_metrics(predictions, human_texts)
 
     # Afficher les métriques
-    print("\n📈 MÉTRIQUES")
+    print("\n MÉTRIQUES")
     print("-" * 50)
     print(f"Différence de longueur moyenne: {metrics['length_diff']:.4f}")
     print(f"Ratio moyen du nombre de mots: {metrics['word_count_ratio']:.4f}")
@@ -854,7 +854,7 @@ def test_model_accuracy(model_path="model/saved_model", custom_test=None):
             print(f"Humanisé: {humanized}")
 
         # Interface interactive simple
-        print("\n🔄 TESTER D'AUTRES EXEMPLES")
+        print("\nTESTER D'AUTRES EXEMPLES")
         print("-" * 50)
         print("Entrez du texte à humaniser (ou 'q' pour quitter):")
 
@@ -991,7 +991,7 @@ def create_ui(model_path="model/saved_model"):
     def on_button_click(b):
         with output_area:
             clear_output()
-            print("⏳ Humanisation en cours...")
+            print(" Humanisation en cours...")
 
             try:
                 start_time = time.time()
