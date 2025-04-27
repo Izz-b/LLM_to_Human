@@ -193,4 +193,5 @@ The project includes several optimizations to ensure efficient performance in Go
 - `check_gpu()`: Checks GPU availability
 - `setup_directories()`: Creates necessary directory structure
 - `simple_tokenize()`: Tokenizes text for evaluation
-
+here is a link to a google colab I used to train this code with a ui demo that you can run an exemple on:
+https://colab.research.google.com/drive/1J-FbYCTUqHJMrPzx1gQySSbOgqhFqnqk?usp=sharing
