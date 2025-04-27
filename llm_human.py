@@ -53,13 +53,13 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, Seq2SeqTrainer, S
 def check_gpu():
     """Vérifie la disponibilité du GPU et affiche les informations"""
     if torch.cuda.is_available():
-        print(f"🎉 GPU disponible: {torch.cuda.get_device_name(0)}")
+        print(f" GPU disponible: {torch.cuda.get_device_name(0)}")
         # Afficher la mémoire GPU disponible
         print(f"Mémoire GPU totale: {torch.cuda.get_device_properties(0).total_memory / (1024**3):.2f} GB")
         !nvidia-smi
         return True
     else:
-        print("⚠️ Pas de GPU détecté. L'entraînement sera plus lent sur CPU.")
+        print(" Pas de GPU détecté. L'entraînement sera plus lent sur CPU.")
         return False
 
 # Création de la structure de répertoires avec gestion des erreurs
@@ -71,7 +71,7 @@ def setup_directories():
             os.makedirs(directory, exist_ok=True)
         except Exception as e:
             print(f"Erreur lors de la création du répertoire {directory}: {e}")
-    print("✅ Structure de répertoires créée")
+    print(" Structure de répertoires créée")
 
 # === 2. Définition du modèle d'humanisation ===
 class TextHumanizerModel:
@@ -108,9 +108,9 @@ class TextHumanizerModel:
                 self.model = self.model.half()  # Conversion en FP16
 
             self.model.to(self.device)
-            print(f"✅ Modèle chargé sur {self.device}")
+            print(f"Modèle chargé sur {self.device}")
         except Exception as e:
-            print(f"❌ Erreur lors du chargement du modèle {model_name}: {str(e)}")
+            print(f" Erreur lors du chargement du modèle {model_name}: {str(e)}")
             raise
 
     def save_model(self, output_dir: str):
@@ -139,10 +139,10 @@ class TextHumanizerModel:
             with open(os.path.join(output_dir, "model_info.json"), "w") as f:
                 json.dump(metadata, f, indent=2)
 
-            print(f"✅ Modèle sauvegardé dans {output_dir}")
+            print(f"Modèle sauvegardé dans {output_dir}")
             return True
         except Exception as e:
-            print(f"❌ Erreur lors de la sauvegarde du modèle: {str(e)}")
+            print(f" Erreur lors de la sauvegarde du modèle: {str(e)}")
             return False
 
     @classmethod
@@ -203,11 +203,11 @@ class TextHumanizerModel:
                 instance.model = instance.model.half()
 
             instance.model.to(instance.device)
-            print(f"✅ Modèle chargé sur {instance.device}")
+            print(f"Modèle chargé sur {instance.device}")
 
             return instance
         except Exception as e:
-            print(f"❌ Erreur lors du chargement du modèle: {str(e)}")
+            print(f" Erreur lors du chargement du modèle: {str(e)}")
             raise
 
     def tokenize(self, text: Union[str, List[str]]):
@@ -246,7 +246,7 @@ class TextHumanizerModel:
             # Décoder
             return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
         except Exception as e:
-            print(f"❌ Erreur lors de la génération pour '{input_text[:30]}...': {str(e)}")
+            print(f" Erreur lors de la génération pour '{input_text[:30]}...': {str(e)}")
             return input_text  # Retourner le texte original en cas d'erreur
 
     def generate(self, input_text: Union[str, List[str]], **kwargs):
@@ -350,7 +350,7 @@ class HumanizerDataset(Dataset):
             }
         except Exception as e:
             # En cas d'erreur, retourner un exemple vide (sera ignoré)
-            print(f"❌ Erreur lors de la tokenisation de l'exemple {idx}: {str(e)}")
+            print(f" Erreur lors de la tokenisation de l'exemple {idx}: {str(e)}")
             dummy_tensor = torch.zeros(self.max_length, dtype=torch.long)
             return {
                 "input_ids": dummy_tensor,
@@ -366,7 +366,7 @@ def evaluate_model(model, test_data=None, num_samples=10):
         test_data: DataFrame contenant des paires de textes pour l'évaluation
         num_samples: Nombre d'exemples à afficher
     """
-    print("📊 ÉVALUATION DU MODÈLE")
+    print(" ÉVALUATION DU MODÈLE")
     print("=" * 50)
 
     # Si aucune donnée de test n'est fournie, utiliser quelques exemples standards
@@ -396,7 +396,7 @@ def evaluate_model(model, test_data=None, num_samples=10):
             pred = get_humanized_text(model, text)
             predictions.append(pred)
         except Exception as e:
-            print(f"❌ Erreur lors de la prédiction: {str(e)}")
+            print(f" Erreur lors de la prédiction: {str(e)}")
             predictions.append(text)  # Utiliser le texte original en cas d'erreur
 
     # Calculer les métriques
@@ -415,7 +415,7 @@ def evaluate_model(model, test_data=None, num_samples=10):
 
     # Afficher quelques exemples
     samples = min(num_samples, len(llm_texts))
-    print(f"\n✨ EXEMPLES ({samples})")
+    print(f"\n EXEMPLES ({samples})")
     print("-" * 50)
 
     for i in range(samples):
@@ -468,7 +468,7 @@ def get_humanized_text(model, text: str, style_prefix: str = ""):
 
         return result if isinstance(result, str) else result[0]
     except Exception as e:
-        print(f"❌ Erreur lors de l'humanisation: {str(e)}")
+        print(f" Erreur lors de l'humanisation: {str(e)}")
         return text  # Retour du texte original en cas d'échec
 
 # Fonction de tokenisation simplifiée pour l'évaluation
@@ -580,10 +580,10 @@ def create_sample_dataset(output_path="data/humanized_pairs.csv", size=50):
         df = pd.DataFrame(extended_data)
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         df.to_csv(output_path, index=False)
-        print(f"✅ Dataset d'exemple créé: {output_path} ({len(df)} exemples)")
+        print(f" Dataset d'exemple créé: {output_path} ({len(df)} exemples)")
         return df
     except Exception as e:
-        print(f"❌ Erreur lors de la création du dataset: {str(e)}")
+        print(f" Erreur lors de la création du dataset: {str(e)}")
         return pd.DataFrame(data)
 
 # === 6. Fonction d'entraînement optimisée ===
@@ -610,7 +610,7 @@ def train_model(
     os.makedirs(output_dir, exist_ok=True)
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    print(f"🚀 Entraînement sur {device}")
+    print(f" Entraînement sur {device}")
     print(f"   Modèle: {model_name}")
     print(f"   Données: {data_path}")
     print(f"   Époque: {num_epochs}")
@@ -652,7 +652,7 @@ def train_model(
         llm_texts = df['llm_text'].tolist()
         human_texts = df['human_text'].tolist()
 
-        print(f"✅ Données chargées: {len(llm_texts)} paires")
+        print(f" Données chargées: {len(llm_texts)} paires")
 
         if use_styles:
             styles = ["formel", "amical", "enthousiaste"]
@@ -669,7 +669,7 @@ def train_model(
                     styled_human_texts.append(human_text)
 
             llm_texts, human_texts = styled_llm_texts, styled_human_texts
-            print(f"✅ Dataset enrichi avec styles: {len(llm_texts)} exemples")
+            print(f" Dataset enrichi avec styles: {len(llm_texts)} exemples")
 
         train_texts, val_texts, train_human, val_human = train_test_split(
             llm_texts, human_texts, test_size=0.2, random_state=42
@@ -736,7 +736,7 @@ def train_model(
                 self.step_metrics[state.global_step] = metrics
 
                 if show_metrics:
-                    print(f"\n📊 MÉTRIQUES À L'ÉTAPE {state.global_step}")
+                    print(f"\n MÉTRIQUES À L'ÉTAPE {state.global_step}")
                     print("-" * 50)
                     for key, value in metrics.items():
                         if isinstance(value, float):
@@ -764,10 +764,10 @@ def train_model(
                                 "test_output": humanized,
                                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                             }, f, indent=2)
-                        print(f"✅ Modèle testé et sauvegardé à l'étape {state.global_step}")
+                        print(f" Modèle testé et sauvegardé à l'étape {state.global_step}")
                         print(f"   Exemple de sortie: \"{humanized}\"")
                     except Exception as e:
-                        print(f"❌ Erreur lors du test du modèle: {str(e)}")
+                        print(f" Erreur lors du test du modèle: {str(e)}")
 
         trainer.add_callback(MetricsCallback(trainer, val_dataset, tokenizer, output_dir, save_interval))
 
@@ -776,7 +776,7 @@ def train_model(
             trainer.train()
 
             # --- Évaluation finale ---
-            print("\n🔍 ÉVALUATION FINALE DU MODÈLE")
+            print("\n ÉVALUATION FINALE DU MODÈLE")
             test_df = pd.DataFrame({
                 'llm_text': val_texts[:10],
                 'human_text': val_human[:10]
@@ -798,7 +798,7 @@ def train_model(
                     ]
                 }
                 json.dump(serializable_results, f, indent=2)
-            print(f"✅ Résultats d'évaluation sauvegardés dans {output_dir}/evaluation_results.json")
+            print(f"Résultats d'évaluation sauvegardés dans {output_dir}/evaluation_results.json")
 
         except KeyboardInterrupt:
             print("Entraînement interrompu manuellement.")
@@ -821,13 +821,13 @@ def train_model(
         with open(os.path.join(output_dir, "model_info.json"), "w") as f:
             json.dump(metadata, f, indent=2)
 
-        print(f"✅ Entraînement terminé en {(time.time() - start_time) / 60:.2f} minutes")
-        print(f"✅ Modèle sauvegardé dans {output_dir}")
+        print(f" Entraînement terminé en {(time.time() - start_time) / 60:.2f} minutes")
+        print(f" Modèle sauvegardé dans {output_dir}")
 
         return {"status": "success", "output_dir": output_dir, "training_time": time.time() - start_time}
 
     except Exception as e:
-        print(f"❌ Erreur lors de l'entraînement: {str(e)}")
+        print(f" Erreur lors de l'entraînement: {str(e)}")
         return {"status": "error", "error": str(e)}
 # Ajouter cette fonction pour tester facilement le modèle
 def test_model_accuracy(model_path="model/saved_model", custom_test=None):
@@ -847,7 +847,7 @@ def test_model_accuracy(model_path="model/saved_model", custom_test=None):
         eval_results = evaluate_model(model)
 
         if custom_test:
-            print("\n✏️ TEST PERSONNALISÉ")
+            print("\n TEST PERSONNALISÉ")
             print("-" * 50)
             print(f"Original: {custom_test}")
             humanized = get_humanized_text(model, custom_test)
@@ -868,14 +868,14 @@ def test_model_accuracy(model_path="model/saved_model", custom_test=None):
                     humanized = get_humanized_text(model, user_input)
                     print(f"\nRésultat: {humanized}")
                 except Exception as e:
-                    print(f"❌ Erreur: {str(e)}")
+                    print(f" Erreur: {str(e)}")
             else:
                 print("Texte vide. Veuillez entrer un texte.")
 
         return eval_results
 
     except Exception as e:
-        print(f"❌ Erreur lors du test du modèle: {str(e)}")
+        print(f" Erreur lors du test du modèle: {str(e)}")
         return None
 
 # === 7. API REST ===
@@ -907,9 +907,9 @@ def load_model_bg(model_path: str, device: Optional[str] = None):
             global_model = model
             model_loading = False
 
-        print("✅ Modèle chargé avec succès")
+        print(" Modèle chargé avec succès")
     except Exception as e:
-        print(f"❌ Erreur lors du chargement du modèle: {str(e)}")
+        print(f" Erreur lors du chargement du modèle: {str(e)}")
         model_loading = False
 
 @app.post("/humanize", response_model=TextResponse)
@@ -953,7 +953,7 @@ def create_ui(model_path="model/saved_model"):
         try:
             global_model = TextHumanizerModel.load_model(model_path)
         except Exception as e:
-            print(f"❌ Erreur lors du chargement du modèle: {str(e)}")
+            print(f" Erreur lors du chargement du modèle: {str(e)}")
             print("Continuer avec un modèle par défaut...")
             global_model = TextHumanizerModel()
 
@@ -999,13 +999,13 @@ def create_ui(model_path="model/saved_model"):
                 elapsed = time.time() - start_time
 
                 clear_output()
-                print("✅ Texte humanisé:")
-                print(f"\n📝 Original: \"{text_area.value}\"")
-                print(f"\n✨ Humanisé: \"{humanized}\"")
-                print(f"\n⏱️ Temps de traitement: {elapsed:.2f} secondes")
+                print(" Texte humanisé:")
+                print(f"\n Original: \"{text_area.value}\"")
+                print(f"\n Humanisé: \"{humanized}\"")
+                print(f"\n Temps de traitement: {elapsed:.2f} secondes")
             except Exception as e:
                 clear_output()
-                print(f"❌ Erreur: {str(e)}")
+                print(f" Erreur: {str(e)}")
 
     # Associer la fonction au bouton
     humanize_button.on_click(on_button_click)
@@ -1032,7 +1032,7 @@ def start_api_server():
 
         # Créer un tunnel ngrok
         public_url = ngrok.connect(port).public_url
-        print(f"✅ API accessible à: {public_url}")
+        print(f" API accessible à: {public_url}")
         print("Documentation API: {}/docs".format(public_url))
 
         # Charger le modèle en arrière-plan
@@ -1041,7 +1041,7 @@ def start_api_server():
         threading.Thread(target=lambda: load_model_bg("model/saved_model")).start()
 
     except Exception as e:
-        print(f"❌ Erreur lors du démarrage du serveur: {str(e)}")
+        print(f" Erreur lors du démarrage du serveur: {str(e)}")
 
 # === 10. Fonction principale ===
 def run_demo():
@@ -1053,7 +1053,7 @@ def run_demo():
     4. Entraîne le modèle
     5. Lance l'interface utilisateur
     """
-    print("🚀 Démarrage de la démonstration d'humanisation de texte LLM")
+    print(" Démarrage de la démonstration d'humanisation de texte LLM")
 
     # Vérifier le GPU
     has_gpu = check_gpu()
@@ -1082,7 +1082,7 @@ def run_demo():
     def on_train_click(b):
         with output_widget:
             clear_output()
-            print("⏳ Entraînement du modèle...")
+            print(" Entraînement du modèle...")
 
             # Adapter les paramètres selon la disponibilité du GPU
             batch_size = 8 if has_gpu else 4
@@ -1099,22 +1099,22 @@ def run_demo():
             )
 
             if result["status"] == "success":
-                print("\n✅ Entraînement terminé")
+                print("\n Entraînement terminé")
                 print("Lancement de l'interface utilisateur...")
                 create_ui("model/saved_model")
             else:
-                print(f"\n❌ Erreur lors de l'entraînement: {result.get('error', 'Erreur inconnue')}")
+                print(f"\n Erreur lors de l'entraînement: {result.get('error', 'Erreur inconnue')}")
 
     def on_demo_click(b):
         with output_widget:
             clear_output()
-            print("⏳ Chargement du modèle pré-entraîné...")
+            print(" Chargement du modèle pré-entraîné...")
 
             # Utiliser le modèle de base pour la démonstration
             global global_model
             global_model = TextHumanizerModel()
 
-            print("\n✅ Modèle prêt")
+            print("\n Modèle prêt")
             print("Lancement de l'interface utilisateur...")
             create_ui()
 
@@ -1135,9 +1135,9 @@ if __name__ == "__main__":
     if mount_drive:
         try:
             drive.mount('/content/drive')
-            print("✅ Google Drive monté avec succès")
+            print(" Google Drive monté avec succès")
         except Exception as e:
-            print(f"❌ Erreur lors du montage de Google Drive: {str(e)}")
+            print(f" Erreur lors du montage de Google Drive: {str(e)}")
 
     # Exécuter la démonstration
     run_demo()
